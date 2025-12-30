@@ -578,6 +578,21 @@ button:disabled {
   color: var(--error);
 }
 
+.price-pill {
+  /* Price display pill with rupee symbol - used for products and lab tests */
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  color: var(--brown-800);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .product-grid {
   display: grid;
   gap: 12px;
