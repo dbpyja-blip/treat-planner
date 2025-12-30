@@ -151,8 +151,21 @@ export default function Planner() {
     setPlanEdits((prev) => {
       const draft = { ...prev };
       const plan = { ...(draft[planId] || {}), services: [...(draft[planId]?.services || [])] };
-      const service = { ...(plan.services[serviceIndex] || {}), specifications: { ...(plan.services[serviceIndex]?.specifications || {}) } };
-      service.specifications[key] = value;
+      const service = { ...(plan.services[serviceIndex] || {}) };
+      
+      // Handle specifications: can be either a string or an object
+      // If key is "specifications" and current value is a string, replace the entire string
+      // Otherwise, treat it as an object with key-value pairs
+      if (key === "specifications" && typeof service.specifications === "string") {
+        service.specifications = value;
+      } else {
+        // Convert to object if it's currently a string
+        if (typeof service.specifications === "string") {
+          service.specifications = {};
+        }
+        service.specifications = { ...(service.specifications || {}), [key]: value };
+      }
+      
       plan.services[serviceIndex] = service;
       draft[planId] = plan;
       return draft;
@@ -295,17 +308,34 @@ export default function Planner() {
                                 {srv.verified && <span className="badge-verified">Verified</span>}
                               </div>
                               <div className="form-grid">
-                                {Object.entries(srv.specifications || {}).map(([k, v]) => (
-                                  <label key={k} className="form-field">
-                                    <span className="form-label">{labelize(k)}</span>
+                                {/* 
+                                  Handle specifications: Can be either a string or an object.
+                                  - If string: display as a single text input field
+                                  - If object: display each key-value pair as separate fields
+                                */}
+                                {typeof srv.specifications === "string" ? (
+                                  <label className="form-field" style={{ gridColumn: "1 / -1" }}>
+                                    <span className="form-label">Specifications</span>
                                     <input
                                       className="form-input"
-                                      placeholder={`Enter ${labelize(k).toLowerCase()}`}
-                                      value={safeValue(v)}
-                                      onChange={(e) => updateServiceSpec(plan.plan_id, idx, k, e.target.value)}
+                                      placeholder="Enter specifications"
+                                      value={safeValue(srv.specifications)}
+                                      onChange={(e) => updateServiceSpec(plan.plan_id, idx, "specifications", e.target.value)}
                                     />
                                   </label>
-                                ))}
+                                ) : (
+                                  Object.entries(srv.specifications || {}).map(([k, v]) => (
+                                    <label key={k} className="form-field">
+                                      <span className="form-label">{labelize(k)}</span>
+                                      <input
+                                        className="form-input"
+                                        placeholder={`Enter ${labelize(k).toLowerCase()}`}
+                                        value={safeValue(v)}
+                                        onChange={(e) => updateServiceSpec(plan.plan_id, idx, k, e.target.value)}
+                                      />
+                                    </label>
+                                  ))
+                                )}
                               </div>
                             </div>
                           ))}
@@ -329,10 +359,11 @@ export default function Planner() {
                                   This indicator is ONLY for product cards – services and labs keep their existing verified badge behavior.
                                 */}
                                 <div className="product-name">{p.name || p.product_name || "Product"}</div>
+                                {/* Always show stock status pill - green for verified, red for not verified */}
                                 <span
-                                  className={`stock-pill ${p.verified ? "stock-pill--in" : "stock-pill--out"}`}
+                                  className={`stock-pill ${p.verified === true ? "stock-pill--in" : "stock-pill--out"}`}
                                 >
-                                  {p.verified ? "In stock" : "Out of stock"}
+                                  {p.verified === true ? "In stock" : "Out of stock"}
                                 </span>
                               </div>
                               <div className="form-grid">
@@ -348,81 +379,48 @@ export default function Planner() {
                                   </label>
                                 ))}
                                 {/* 
-                                  Price fields handling: Support both direct pricing fields (MRP_cost, cost) 
-                                  and nested pricing object (pricing.MRP_cost, pricing.cost) structures.
+                                  Price display: Show prices as pills with ₹ symbol instead of input fields.
+                                  Support both direct pricing fields (MRP_cost, cost) and nested pricing object structures.
                                   Priority: Direct fields first, then fall back to nested pricing object.
-                                  This ensures compatibility with different API response formats.
                                 */}
-                                {/* Check for direct pricing fields on product object (from JSON: MRP_cost, cost) */}
-                                {(p.MRP_cost !== null && p.MRP_cost !== undefined && p.MRP_cost !== "") ||
-                                (p.cost !== null && p.cost !== undefined && p.cost !== "") ? (
-                                  <>
-                                    {/* Display MRP Cost field if it exists directly on product */}
-                                    {p.MRP_cost !== null && p.MRP_cost !== undefined && p.MRP_cost !== "" && (
-                                      <label className="form-field">
-                                        <span className="form-label">MRP Cost</span>
-                                        <input
-                                          className="form-input"
-                                          placeholder="Enter MRP cost"
-                                          value={safeValue(p.MRP_cost)}
-                                          onChange={(e) => updateProductField(plan.plan_id, idx, "MRP_cost", e.target.value)}
-                                        />
-                                      </label>
-                                    )}
-                                    {/* Display Cost field if it exists directly on product */}
-                                    {p.cost !== null && p.cost !== undefined && p.cost !== "" && (
-                                      <label className="form-field">
-                                        <span className="form-label">Cost</span>
-                                        <input
-                                          className="form-input"
-                                          placeholder="Enter cost"
-                                          value={safeValue(p.cost)}
-                                          onChange={(e) => updateProductField(plan.plan_id, idx, "cost", e.target.value)}
-                                        />
-                                      </label>
-                                    )}
-                                  </>
-                                ) : (
-                                  /* Fall back to nested pricing object structure if direct fields don't exist */
-                                  p.pricing && (p.pricing.MRP_cost !== null || p.pricing.cost !== null) ? (
+                                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", gridColumn: "1 / -1", marginTop: "4px" }}>
+                                  {/* Check for direct pricing fields on product object (from JSON: MRP_cost, cost) */}
+                                  {((p.MRP_cost !== null && p.MRP_cost !== undefined && p.MRP_cost !== "") ||
+                                    (p.cost !== null && p.cost !== undefined && p.cost !== "")) ? (
                                     <>
-                                      {/* Display MRP Cost from nested pricing object */}
-                                      {p.pricing.MRP_cost !== null && (
-                                        <label className="form-field">
-                                          <span className="form-label">MRP Cost</span>
-                                          <input
-                                            className="form-input"
-                                            placeholder="Enter MRP cost"
-                                            value={safeValue(p.pricing.MRP_cost)}
-                                            onChange={(e) =>
-                                              updateProductField(plan.plan_id, idx, "pricing", {
-                                                ...p.pricing,
-                                                MRP_cost: e.target.value,
-                                              })
-                                            }
-                                          />
-                                        </label>
+                                      {/* Display MRP Cost as pill if it exists directly on product */}
+                                      {p.MRP_cost !== null && p.MRP_cost !== undefined && p.MRP_cost !== "" && (
+                                        <span className="price-pill">
+                                          MRP: ₹{typeof p.MRP_cost === "number" ? p.MRP_cost.toFixed(2) : p.MRP_cost}
+                                        </span>
                                       )}
-                                      {/* Display Cost from nested pricing object */}
-                                      {p.pricing.cost !== null && (
-                                        <label className="form-field">
-                                          <span className="form-label">Cost</span>
-                                          <input
-                                            className="form-input"
-                                            placeholder="Enter cost"
-                                            value={safeValue(p.pricing.cost)}
-                                            onChange={(e) =>
-                                              updateProductField(plan.plan_id, idx, "pricing", {
-                                                ...p.pricing,
-                                                cost: e.target.value,
-                                              })
-                                            }
-                                          />
-                                        </label>
+                                      {/* Display Cost as pill if it exists directly on product */}
+                                      {p.cost !== null && p.cost !== undefined && p.cost !== "" && (
+                                        <span className="price-pill">
+                                          Cost: ₹{typeof p.cost === "number" ? p.cost.toFixed(2) : p.cost}
+                                        </span>
                                       )}
                                     </>
-                                  ) : null
-                                )}
+                                  ) : (
+                                    /* Fall back to nested pricing object structure if direct fields don't exist */
+                                    p.pricing && (p.pricing.MRP_cost !== null || p.pricing.cost !== null) ? (
+                                      <>
+                                        {/* Display MRP Cost from nested pricing object as pill */}
+                                        {p.pricing.MRP_cost !== null && (
+                                          <span className="price-pill">
+                                            MRP: ₹{typeof p.pricing.MRP_cost === "number" ? p.pricing.MRP_cost.toFixed(2) : p.pricing.MRP_cost}
+                                          </span>
+                                        )}
+                                        {/* Display Cost from nested pricing object as pill */}
+                                        {p.pricing.cost !== null && (
+                                          <span className="price-pill">
+                                            Cost: ₹{typeof p.pricing.cost === "number" ? p.pricing.cost.toFixed(2) : p.pricing.cost}
+                                          </span>
+                                        )}
+                                      </>
+                                    ) : null
+                                  )}
+                                </div>
                               </div>
                             </div>
                           ))}
@@ -450,17 +448,12 @@ export default function Planner() {
                                   />
                                   {l.verified && <span className="badge-verified">Verified</span>}
                                 </div>
+                                {/* Display price as pill with ₹ symbol if price exists */}
                                 {hasPrice && (
-                                  <div className="form-grid">
-                                    <label className="form-field">
-                                      <span className="form-label">Price</span>
-                                      <input
-                                        className="form-input"
-                                        placeholder="Enter price"
-                                        value={safeValue(l.price)}
-                                        onChange={(e) => updateLabField(plan.plan_id, idx, "price", e.target.value)}
-                                      />
-                                    </label>
+                                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "4px" }}>
+                                    <span className="price-pill">
+                                      Price: ₹{typeof l.price === "number" ? l.price.toFixed(2) : l.price}
+                                    </span>
                                   </div>
                                 )}
                               </div>
@@ -496,3 +489,4 @@ export default function Planner() {
     </>
   );
 }
+
