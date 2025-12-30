@@ -347,42 +347,82 @@ export default function Planner() {
                                     />
                                   </label>
                                 ))}
-                                {p.pricing && (p.pricing.MRP_cost !== null || p.pricing.cost !== null) ? (
+                                {/* 
+                                  Price fields handling: Support both direct pricing fields (MRP_cost, cost) 
+                                  and nested pricing object (pricing.MRP_cost, pricing.cost) structures.
+                                  Priority: Direct fields first, then fall back to nested pricing object.
+                                  This ensures compatibility with different API response formats.
+                                */}
+                                {/* Check for direct pricing fields on product object (from JSON: MRP_cost, cost) */}
+                                {(p.MRP_cost !== null && p.MRP_cost !== undefined && p.MRP_cost !== "") ||
+                                (p.cost !== null && p.cost !== undefined && p.cost !== "") ? (
                                   <>
-                                    {p.pricing.MRP_cost !== null && (
+                                    {/* Display MRP Cost field if it exists directly on product */}
+                                    {p.MRP_cost !== null && p.MRP_cost !== undefined && p.MRP_cost !== "" && (
                                       <label className="form-field">
                                         <span className="form-label">MRP Cost</span>
                                         <input
                                           className="form-input"
                                           placeholder="Enter MRP cost"
-                                          value={safeValue(p.pricing.MRP_cost)}
-                                          onChange={(e) =>
-                                            updateProductField(plan.plan_id, idx, "pricing", {
-                                              ...p.pricing,
-                                              MRP_cost: e.target.value,
-                                            })
-                                          }
+                                          value={safeValue(p.MRP_cost)}
+                                          onChange={(e) => updateProductField(plan.plan_id, idx, "MRP_cost", e.target.value)}
                                         />
                                       </label>
                                     )}
-                                    {p.pricing.cost !== null && (
+                                    {/* Display Cost field if it exists directly on product */}
+                                    {p.cost !== null && p.cost !== undefined && p.cost !== "" && (
                                       <label className="form-field">
                                         <span className="form-label">Cost</span>
                                         <input
                                           className="form-input"
                                           placeholder="Enter cost"
-                                          value={safeValue(p.pricing.cost)}
-                                          onChange={(e) =>
-                                            updateProductField(plan.plan_id, idx, "pricing", {
-                                              ...p.pricing,
-                                              cost: e.target.value,
-                                            })
-                                          }
+                                          value={safeValue(p.cost)}
+                                          onChange={(e) => updateProductField(plan.plan_id, idx, "cost", e.target.value)}
                                         />
                                       </label>
                                     )}
                                   </>
-                                ) : null}
+                                ) : (
+                                  /* Fall back to nested pricing object structure if direct fields don't exist */
+                                  p.pricing && (p.pricing.MRP_cost !== null || p.pricing.cost !== null) ? (
+                                    <>
+                                      {/* Display MRP Cost from nested pricing object */}
+                                      {p.pricing.MRP_cost !== null && (
+                                        <label className="form-field">
+                                          <span className="form-label">MRP Cost</span>
+                                          <input
+                                            className="form-input"
+                                            placeholder="Enter MRP cost"
+                                            value={safeValue(p.pricing.MRP_cost)}
+                                            onChange={(e) =>
+                                              updateProductField(plan.plan_id, idx, "pricing", {
+                                                ...p.pricing,
+                                                MRP_cost: e.target.value,
+                                              })
+                                            }
+                                          />
+                                        </label>
+                                      )}
+                                      {/* Display Cost from nested pricing object */}
+                                      {p.pricing.cost !== null && (
+                                        <label className="form-field">
+                                          <span className="form-label">Cost</span>
+                                          <input
+                                            className="form-input"
+                                            placeholder="Enter cost"
+                                            value={safeValue(p.pricing.cost)}
+                                            onChange={(e) =>
+                                              updateProductField(plan.plan_id, idx, "pricing", {
+                                                ...p.pricing,
+                                                cost: e.target.value,
+                                              })
+                                            }
+                                          />
+                                        </label>
+                                      )}
+                                    </>
+                                  ) : null
+                                )}
                               </div>
                             </div>
                           ))}
@@ -456,4 +496,3 @@ export default function Planner() {
     </>
   );
 }
-
