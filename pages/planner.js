@@ -322,8 +322,18 @@ export default function Planner() {
                           {products.map((p, idx) => (
                             <div key={idx} className="product-card">
                               <div className="product-head">
+                                {/* 
+                                  Product title on the left and stock status on the right.
+                                  - If the product is verified (p.verified === true), we treat it as "In stock" and show a green pill.
+                                  - If the product is NOT verified / missing verification, we treat it as "Out of stock" and show a red pill.
+                                  This indicator is ONLY for product cards – services and labs keep their existing verified badge behavior.
+                                */}
                                 <div className="product-name">{p.name || p.product_name || "Product"}</div>
-                                {p.verified && <span className="badge-verified">Verified</span>}
+                                <span
+                                  className={`stock-pill ${p.verified ? "stock-pill--in" : "stock-pill--out"}`}
+                                >
+                                  {p.verified ? "In stock" : "Out of stock"}
+                                </span>
                               </div>
                               <div className="form-grid">
                                 {["dosage", "frequency", "duration", "route", "instruction"].map((field) => (
