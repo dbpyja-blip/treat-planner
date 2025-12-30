@@ -307,36 +307,39 @@ export default function Planner() {
                                 </div>
                                 {srv.verified && <span className="badge-verified">Verified</span>}
                               </div>
-                              <div className="form-grid">
-                                {/* 
-                                  Handle specifications: Can be either a string or an object.
-                                  - If string: display as a single text input field
-                                  - If object: display each key-value pair as separate fields
-                                */}
-                                {typeof srv.specifications === "string" ? (
-                                  <label className="form-field" style={{ gridColumn: "1 / -1" }}>
-                                    <span className="form-label">Specifications</span>
-                                    <input
-                                      className="form-input"
-                                      placeholder="Enter specifications"
-                                      value={safeValue(srv.specifications)}
-                                      onChange={(e) => updateServiceSpec(plan.plan_id, idx, "specifications", e.target.value)}
-                                    />
-                                  </label>
-                                ) : (
-                                  Object.entries(srv.specifications || {}).map(([k, v]) => (
-                                    <label key={k} className="form-field">
-                                      <span className="form-label">{labelize(k)}</span>
+                              {/* 
+                                Only show specifications section if specifications exist and have content.
+                                - If string: show only if it's not empty/null/undefined
+                                - If object: show only if it has at least one key-value pair
+                              */}
+                              {(typeof srv.specifications === "string" && srv.specifications && srv.specifications.trim() !== "") ||
+                              (typeof srv.specifications === "object" && srv.specifications !== null && Object.keys(srv.specifications || {}).length > 0) ? (
+                                <div className="form-grid">
+                                  {typeof srv.specifications === "string" ? (
+                                    <label className="form-field" style={{ gridColumn: "1 / -1" }}>
+                                      <span className="form-label">Specifications</span>
                                       <input
                                         className="form-input"
-                                        placeholder={`Enter ${labelize(k).toLowerCase()}`}
-                                        value={safeValue(v)}
-                                        onChange={(e) => updateServiceSpec(plan.plan_id, idx, k, e.target.value)}
+                                        placeholder="Enter specifications"
+                                        value={safeValue(srv.specifications)}
+                                        onChange={(e) => updateServiceSpec(plan.plan_id, idx, "specifications", e.target.value)}
                                       />
                                     </label>
-                                  ))
-                                )}
-                              </div>
+                                  ) : (
+                                    Object.entries(srv.specifications || {}).map(([k, v]) => (
+                                      <label key={k} className="form-field">
+                                        <span className="form-label">{labelize(k)}</span>
+                                        <input
+                                          className="form-input"
+                                          placeholder={`Enter ${labelize(k).toLowerCase()}`}
+                                          value={safeValue(v)}
+                                          onChange={(e) => updateServiceSpec(plan.plan_id, idx, k, e.target.value)}
+                                        />
+                                      </label>
+                                    ))
+                                  )}
+                                </div>
+                              ) : null}
                             </div>
                           ))}
                         </div>
