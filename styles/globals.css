@@ -550,6 +550,34 @@ button:disabled {
   color: var(--text-primary);
 }
 
+.stock-pill {
+  /* Base visual style for stock status pill shown ONLY on product cards. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  min-width: 88px; /* Keeps the pill width stable when text changes */
+  text-transform: none;
+}
+
+.stock-pill--in {
+  /* Green "In stock" variant – product is verified. */
+  background: rgba(31, 138, 90, 0.12);
+  border-color: rgba(31, 138, 90, 0.35);
+  color: var(--success);
+}
+
+.stock-pill--out {
+  /* Red "Out of stock" variant – product is NOT verified. */
+  background: rgba(178, 59, 43, 0.08);
+  border-color: rgba(178, 59, 43, 0.35);
+  color: var(--error);
+}
+
 .product-grid {
   display: grid;
   gap: 12px;
