@@ -199,14 +199,14 @@ export default function Planner() {
   return (
     <>
       <Head>
-        <title>Treatment Plan Planner | AssemblyAI</title>
+        <title>Treatment Plan Planner | AesthatiQ</title>
       </Head>
       <div className="shell" style={{ width: "min(1200px, 100%)", marginTop: 8 }}>
         <div className="glass">
           <div className="header">
             <div className="hero">
               <div className="title">
-                <div className="badge">Planner</div>
+                <img src="/logo_final-01.png" alt="AesthatiQ Logo" style={{ height: "40px", marginBottom: "12px" }} />
                 <h1>Treatment Plans</h1>
               </div>
               <p className="subtitle">{headerSubtitle}</p>
@@ -294,8 +294,6 @@ export default function Planner() {
 
                     {editedPlan?.clinical_notes && (
                       <div className="section">
-                        {/* Debugging log to verify notes presence */}
-                        {console.log("Rendering clinical notes for plan", plan.plan_id, editedPlan.clinical_notes)}
                         <div className="section-head">
                           <div className="section-title">Clinical Notes</div>
                         </div>
