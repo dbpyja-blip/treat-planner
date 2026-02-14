@@ -292,7 +292,7 @@ export default function Planner() {
                       <span className="pill">Labs: {labs.length}</span>
                     </div>
 
-                    {editedPlan.clinical_notes && (
+                    {editedPlan && typeof editedPlan.clinical_notes === "string" && editedPlan.clinical_notes.trim().length > 0 && (
                       <div className="section">
                         <div className="section-head">
                           <div className="section-title">Clinical Notes</div>
@@ -516,4 +516,3 @@ export default function Planner() {
   );
 }
 
-s
