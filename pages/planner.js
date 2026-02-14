@@ -152,7 +152,7 @@ export default function Planner() {
       const draft = { ...prev };
       const plan = { ...(draft[planId] || {}), services: [...(draft[planId]?.services || [])] };
       const service = { ...(plan.services[serviceIndex] || {}) };
-      
+
       // Handle specifications: can be either a string or an object
       // If key is "specifications" and current value is a string, replace the entire string
       // Otherwise, treat it as an object with key-value pairs
@@ -165,7 +165,7 @@ export default function Planner() {
         }
         service.specifications = { ...(service.specifications || {}), [key]: value };
       }
-      
+
       plan.services[serviceIndex] = service;
       draft[planId] = plan;
       return draft;
@@ -292,6 +292,29 @@ export default function Planner() {
                       <span className="pill">Labs: {labs.length}</span>
                     </div>
 
+                    {editedPlan.clinical_notes && (
+                      <div className="section">
+                        <div className="section-head">
+                          <div className="section-title">Clinical Notes</div>
+                        </div>
+                        <div className="section-body">
+                          <div style={{
+                            padding: "16px",
+                            background: "linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,247,229,0.6) 100%)",
+                            borderRadius: "12px",
+                            borderLeft: "4px solid #2b1a0f",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.02)",
+                            color: "#555",
+                            fontSize: "0.95rem",
+                            lineHeight: "1.6",
+                            whiteSpace: "pre-wrap"
+                          }}>
+                            {editedPlan.clinical_notes}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {planServices.length > 0 && (
                       <div className="section">
                         <div className="section-head">
@@ -313,7 +336,7 @@ export default function Planner() {
                                 - If object: show only if it has at least one key-value pair
                               */}
                               {(typeof srv.specifications === "string" && srv.specifications && srv.specifications.trim() !== "") ||
-                              (typeof srv.specifications === "object" && srv.specifications !== null && Object.keys(srv.specifications || {}).length > 0) ? (
+                                (typeof srv.specifications === "object" && srv.specifications !== null && Object.keys(srv.specifications || {}).length > 0) ? (
                                 <div className="form-grid">
                                   {typeof srv.specifications === "string" ? (
                                     <label className="form-field" style={{ gridColumn: "1 / -1" }}>
@@ -493,3 +516,4 @@ export default function Planner() {
   );
 }
 
+s
