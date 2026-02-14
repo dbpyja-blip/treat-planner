@@ -20,65 +20,17 @@ export default function Planner() {
     return `session-${Date.now()}`;
   };
 
-  const formatSpecs = (specs = {}) =>
-    Object.entries(specs)
-      .map(([k, v]) => `    - ${k}: ${v}`)
-      .join("\n");
+  // Unused helper functions removed to clean up build warnings.
 
-  const formatCostVars = (options = []) =>
-    options
-      .map(
-        (o) =>
-          `    - session: ${o.session ?? "-"}, cost_per_session: ${o.cost_per_session ?? "-"}, grafts: ${o.grafts ?? "-"}, weight: ${o.weight ?? "-"}`
-      )
-      .join("\n");
-
-  const formatPlanNotes = (plan) => {
-    const services =
-      plan.services
-        ?.map((s) => {
-          const specText = s.specifications ? formatSpecs(s.specifications) : "";
-          const costText = s.service_cost_variable_options ? formatCostVars(s.service_cost_variable_options) : "";
-          return [
-            `• Service: ${s.service_name || "Service"}`,
-            specText,
-            costText ? "    - cost options:" : "",
-            costText,
-          ]
-            .filter(Boolean)
-            .join("\n");
-        })
-        .join("\n") || "";
-
-    const products =
-      plan.products
-        ?.map((p) => {
-          const details = [
-            p.composition ? `    - composition: ${p.composition}` : "",
-            p.dosage ? `    - dosage: ${p.dosage}` : "",
-            p.frequency ? `    - frequency: ${p.frequency}` : "",
-            p.duration ? `    - duration: ${p.duration}` : "",
-            p.route ? `    - route: ${p.route}` : "",
-            p.instruction ? `    - instruction: ${p.instruction}` : "",
-          ]
-            .filter(Boolean)
-            .join("\n");
-          return [`• Product: ${p.product_name || p.name || "Product"}`, details].filter(Boolean).join("\n");
-        })
-        .join("\n") || "";
-
-    const labs =
-      plan.lab_tests?.map((l) => `• Lab: ${l.lab_test_name || l.name || "Lab Test"}`).join("\n") || "";
-
-    return `${plan.plan_name || `Plan ${plan.plan_id}`}\n${[services, products, labs].filter(Boolean).join("\n")}`;
-  };
-
+  // Helper for labelling keys
   const labelize = (key) =>
     key
       .replace(/_/g, " ")
       .replace(/\w\S*/g, (w) => w.charAt(0).toUpperCase() + w.slice(1));
 
   const safeValue = (val) => (val === null || val === undefined ? "" : val);
+
+
 
   const loadTranscription = () => {
     if (typeof window === "undefined") return "";
@@ -516,4 +468,3 @@ export default function Planner() {
   );
 }
 
-s
