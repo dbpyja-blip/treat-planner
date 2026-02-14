@@ -1,4 +1,4 @@
-# AssemblyAI Medical Transcription
+# AssemblyAI Medical Transcription.
 
 Medical transcription service using AssemblyAI API with a web-based UI for audio recording and transcription.
 
