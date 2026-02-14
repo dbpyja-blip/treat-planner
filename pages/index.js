@@ -247,7 +247,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Treatment Plan Planner | AssemblyAI</title>
+        <title>Treatment Plan Planner | AesthatiQ</title>
         <meta name="description" content="Record audio, edit transcript, and generate treatment plans." />
       </Head>
 
@@ -256,12 +256,12 @@ export default function Home() {
           <div className="header">
             <div className="hero">
               <div className="title">
-                <div className="badge">Live Beta</div>
+                <img src="/logo_final-01.png" alt="AesthatiQ Logo" style={{ height: "40px", marginBottom: "12px" }} />
                 <h1>Treatment Plan Planner</h1>
               </div>
               <p className="subtitle">
-                Capture crystal-clear audio, pause and resume seamlessly, then submit for instant AssemblyAI transcription.
-                Crafted for clinicians, researchers, and note-takers who value precision.
+                Capture crystal-clear audio, pause and resume seamlessly, then submit for instant transcription.
+                Crafted for AesthatiQ clinicians, researchers, and note-takers who value precision.
               </p>
             </div>
             <div className="status-chip">
@@ -277,7 +277,7 @@ export default function Home() {
               <div className="info-bar">
                 <div className="stat-group">
                   <span className="pill">High fidelity</span>
-                  <span className="stat-label">AssemblyAI Universal model</span>
+                  <span className="stat-label">AesthatiQ Intelligence</span>
                 </div>
                 <div className="timer">{formatTime(elapsedMs)}</div>
               </div>
@@ -304,9 +304,8 @@ export default function Home() {
               </div>
 
               <div
-                className={`recording-status ${
-                  isRecording ? "recording" : isPaused ? "paused" : ""
-                }`}
+                className={`recording-status ${isRecording ? "recording" : isPaused ? "paused" : ""
+                  }`}
               >
                 {isRecording ? "🔴 Recording" : isPaused ? "⏸ Paused" : canSubmit ? "✅ Recording complete" : ""}
               </div>
@@ -323,7 +322,7 @@ export default function Home() {
                 </div>
                 <div className="step">
                   <h3>③ Submit</h3>
-                  <p>Upload securely, then sit back while AssemblyAI processes the transcript.</p>
+                  <p>Upload securely, then sit back while AesthatiQ processes the transcript.</p>
                 </div>
               </div>
             </div>
@@ -399,4 +398,3 @@ export default function Home() {
     </>
   );
 }
-
