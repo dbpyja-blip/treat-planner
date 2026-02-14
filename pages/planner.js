@@ -292,8 +292,10 @@ export default function Planner() {
                       <span className="pill">Labs: {labs.length}</span>
                     </div>
 
-                    {editedPlan && typeof editedPlan.clinical_notes === "string" && editedPlan.clinical_notes.trim().length > 0 && (
+                    {editedPlan?.clinical_notes && (
                       <div className="section">
+                        {/* Debugging log to verify notes presence */}
+                        {console.log("Rendering clinical notes for plan", plan.plan_id, editedPlan.clinical_notes)}
                         <div className="section-head">
                           <div className="section-title">Clinical Notes</div>
                         </div>
@@ -516,3 +518,4 @@ export default function Planner() {
   );
 }
 
+s
